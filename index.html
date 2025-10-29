@@ -259,7 +259,8 @@
         // Modals
         const loginModal = document.getElementById('login-modal');
         const signupModal = document.getElementById('signup-modal');
-
+        const alertModal = document.getElementById('alert-modal'); // <-- Added this to fix bug 
+        
         // Nav Buttons
         const loginNavBtn = document.getElementById('login-nav-btn');
         const signupNavBtn = document.getElementById('signup-nav-btn');
@@ -548,11 +549,12 @@
         });
 
         // --- 12. CUSTOM ALERT (for non-auth alerts) ---
-        const alertModal = document.getElementById('alert-modal');
         const alertTitle = document.getElementById('alert-title');
         const alertMessage = document.getElementById('alert-message');
         const alertClose = document.getElementById('alert-close');
         
+        // REMOVED THE LINE THAT WAS CAUSING THE INFINITE LOOP HERE
+
         function customAlert(title, message) {
             alertTitle.textContent = title;
             alertMessage.textContent = message;
