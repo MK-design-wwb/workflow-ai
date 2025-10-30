@@ -3,233 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WorkFlow AI - Your AI Office Suite</title>
+    <title>WorkFlow AI - Minimum Viable Test</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script src="https://unpkg.com/browse/pdfjs-dist@2.7.570/build/pdf.js"></script>
-    <!-- Import Firebase v10+ (new module style) -->
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .modal {
-            display: none;
-            animation: fadeIn 0.3s ease-out;
-        }
-        .modal-content {
-            animation: slideIn 0.3s ease-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; } to { opacity: 1; }
-        }
-        @keyframes slideIn {
-            from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; }
-        }
-        
-        /* Simple Carousel Styles */
-        .carousel-container { display: flex; overflow-x: hidden; scroll-snap-type: x mandatory; }
-        .carousel-item { flex: 0 0 100%; scroll-snap-align: center; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #1f2937; }
+        .modal { display: none; background-color: rgba(0,0,0,0.5); }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="flex flex-col items-center justify-center min-h-screen">
 
-    <!-- Header -->
-    <header class="bg-white shadow-sm w-full sticky top-0 z-40">
-        <div class="container mx-auto max-w-7xl px-4 py-3 flex justify-between items-center">
-            <h1 class="text-3xl font-bold text-indigo-600">WorkFlow AI</h1>
-            <nav id="nav-logged-out" class="space-x-4">
-                <button id="login-nav-btn" class="font-medium text-gray-600 hover:text-indigo-600">Log In</button>
-                <button id="signup-nav-btn" class="bg-indigo-600 text-white font-bold px-4 py-2 rounded-lg shadow-sm hover:bg-indigo-700 transition-all">
-                    Sign Up Free
-                </button>
+    <!-- Header Navigation -->
+    <header class="w-full bg-white shadow-md fixed top-0 z-10">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-indigo-600">WorkFlow AI Test</h1>
+            <nav id="nav-logged-out" class="space-x-2">
+                <button id="login-nav-btn" class="text-sm font-medium text-gray-600 hover:text-indigo-600">Log In</button>
+                <button id="signup-nav-btn" class="bg-indigo-600 text-white text-sm font-bold px-3 py-1 rounded-md hover:bg-indigo-700">Sign Up</button>
             </nav>
-            <nav id="nav-logged-in" class="hidden space-x-4 items-center">
-                <span id="user-email-display" class="text-gray-600 text-sm hidden sm:inline"></span>
-                <button id="settings-btn" class="font-medium text-gray-600 hover:text-indigo-600">Settings</button>
-                <button id="logout-btn" class="bg-gray-200 text-gray-800 font-bold px-4 py-2 rounded-lg shadow-sm hover:bg-gray-300 transition-all">
-                    Log Out
-                </button>
+            <nav id="nav-logged-in" class="hidden space-x-2 items-center">
+                <span id="user-email-display" class="text-gray-600 text-sm"></span>
+                <button id="logout-btn" class="bg-gray-200 text-gray-800 text-sm px-3 py-1 rounded-md hover:bg-gray-300">Log Out</button>
             </nav>
         </div>
     </header>
 
-    <!-- Main Content: This will be dynamically shown/hidden -->
-    
-    <!-- SECTION 1: Logged-Out Homepage (Hero + Features) -->
-    <main id="homepage-section" class="container mx-auto max-w-5xl p-4 py-16 text-center">
-        <h2 class="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6">Your AI-Powered Office Suite</h2>
-        <p class="text-lg md:text-xl text-gray-600 mb-10 max-w-3xl mx-auto">
-            Stop fighting with documents. Let AI do the hard work. Edit PDFs, create presentations, and master spreadsheets—all in one place.
+    <!-- Main Status Display -->
+    <main class="text-center p-8 bg-white rounded-xl shadow-2xl mt-20">
+        <h2 id="status-title" class="text-2xl font-extrabold text-gray-900 mb-4">Awaiting User Action</h2>
+        <p id="status-message" class="text-gray-600">Please Log In or Sign Up to test the connection.</p>
+        <p class="mt-4 text-sm text-indigo-500">
+            Current Status: <span id="auth-status">Checking...</span>
         </p>
-        <button id="signup-hero-btn" class="bg-indigo-600 text-white font-bold text-lg px-8 py-3 rounded-lg shadow-lg hover:bg-indigo-700 transition-all">
-            Get Started For Free
-        </button>
-
-        <!-- "Transiting Pictures" Carousel -->
-        <div class="mt-20 w-full max-w-3xl mx-auto bg-white rounded-xl shadow-2xl p-6">
-            <div id="carousel" class="carousel-container rounded-lg">
-                <div class="carousel-item p-4 text-center">
-                    <img src="https://placehold.co/800x400/6366f1/ffffff?text=Feature+1:+AI+PDF+Editor" alt="AI PDF Editor" class="rounded-lg mb-4 w-full">
-                    <h3 class="text-2xl font-bold mb-2">Phase 1: AI PDF Editor</h3>
-                    <p class="text-gray-600">The feature we're building now. Upload any PDF and start editing, signing, or letting AI fill your forms.</p>
-                </div>
-                <div class="carousel-item p-4 text-center">
-                    <img src="https://placehold.co/800x400/ec4899/ffffff?text=Feature+2:+AI+Slide+Creator" alt="AI Slide Creator" class="rounded-lg mb-4 w-full">
-                    <h3 class="text-2xl font-bold mb-2">Phase 2: AI Presentations</h3>
-                    <p class="text-gray-600">Tell the AI your topic, and it will generate a stunning, 10-slide presentation for you in seconds.</p>
-                </div>
-                <div class="carousel-item p-4 text-center">
-                    <img src="https://placehold.co/800x400/10b981/ffffff?text=Feature+3:+AI+Sheet+Formulas" alt="AI Sheet Formulas" class="rounded-lg mb-4 w-full">
-                    <h3 class="text-2xl font-bold mb-2">Phase 3: AI Spreadsheet Helper</h3>
-                    <p class="text-gray-600">"Explain this spreadsheet" or "Write a formula to..." and our AI will solve your Excel problems instantly.</p>
-                </div>
-            </div>
-            <div id="carousel-dots" class="flex justify-center mt-4 space-x-2">
-                <!-- Dots will be added by JS -->
-            </div>
-        </div>
     </main>
-
-    <!-- SECTION 2: The Logged-In Application -->
-    <main id="app-section" class="hidden container mx-auto max-w-7xl p-4 flex-grow">
-        <!-- This is where the PDF editor from Phase 1 goes -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Toolbar -->
-            <div class="lg:col-span-3 bg-white p-4 rounded-xl shadow-lg h-full">
-                <h2 class="text-xl font-semibold mb-4 border-b pb-2">PDFill Engine</h2>
-                <!-- ... (All the PDF tool buttons from the previous file) ... -->
-                <div class="mb-4">
-                    <label for="file-upload" class="w-full inline-block bg-indigo-600 text-white text-center font-bold py-2 px-4 rounded-lg cursor-pointer hover:bg-indigo-700 transition">
-                        1. Upload PDF
-                    </label>
-                    <input type="file" id="file-upload" class="hidden" accept="application/pdf">
-                    <span id="file-name" class="text-sm text-gray-500 mt-2 block">No file selected.</span>
-                </div>
-                <!-- ... (Add Text, Add Signature, AI Filler, Download, etc.) ... -->
-                 <div class="mt-6 pt-4 border-t">
-                    <button id="download-pdf" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition shadow-lg">
-                        2. Save & Download
-                    </button>
-                    <p id="pro-watermark-notice" class="text-xs text-center text-gray-500 mt-2">
-                        Free plan includes a watermark. <a href="#" id="upgrade-link-pdf" class="text-indigo-600 underline">Upgrade to Pro</a>.
-                    </l>
-                </div>
-            </div>
-            <!-- PDF Viewer -->
-            <div class="lg:col-span-9 bg-white p-4 rounded-xl shadow-lg min-h-[70vh] flex items-center justify-center">
-                <div id="pdf-viewer" class="w-full h-full text-center">
-                    <canvas id="pdf-canvas" class="mx-auto"></canvas>
-                    <p id="viewer-placeholder" class="text-gray-500 mt-10">
-                        Upload a PDF to begin editing.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- SECTION 3: Settings Page -->
-    <main id="settings-section" class="hidden container mx-auto max-w-3xl p-4 py-16">
-        <div class="bg-white p-8 rounded-xl shadow-lg">
-            <h2 class="text-3xl font-bold mb-6">Settings</h2>
-            
-            <div class="mb-6">
-                <h3 class="text-xl font-semibold">My Account</h3>
-                <p class="text-gray-600">Logged in as: <span id="settings-user-email" class="font-medium">...</span></p>
-            </div>
-
-            <div class="mb-6">
-                <h3 class="text-xl font-semibold">Subscription Status</h3>
-                <p class="text-gray-600">You are on the: <span id="subscription-status" class="font-medium text-green-600">...</span></p>
-                
-                <!-- This button links to your Gumroad *customer portal* -->
-                <button id="manage-subscription-btn" class="mt-2 text-indigo-600 underline">
-                    Manage or Cancel Subscription
-                </button>
-            </div>
-            
-            <!-- This is the "secret password" field for Phase 1 -->
-            <div id="upgrade-section" class="p-4 bg-gray-50 rounded-lg">
-                <h3 class="text-xl font-semibold">Have a Pro Access Code?</h3>
-                <p class="text-gray-600 text-sm mb-3">If you purchased from Gumroad, enter the "Access Code" from your receipt to unlock Pro.</p>
-                <input type="text" id="access-code-input" placeholder="Enter code..." class="w-full p-2 border rounded-md">
-                <button id="submit-access-code-btn" class="w-full mt-2 bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700">Unlock Pro</button>
-            </div>
-            
-            <button id="logout-btn-settings" class="w-full mt-8 bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">
-                Log Out
-            </button>
-        </div>
-    </main>
-
-
-    <!-- MODALS -->
+    
 
     <!-- Login Modal -->
-    <div id="login-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-        <div class="modal-content bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
-            <h2 class="text-2xl font-bold mb-4">Log In</h2>
-            <p id="login-error" class="text-red-500 text-sm mb-4 hidden"></p>
-            <div class="space-y-4">
-                <input id="login-email" type="email" placeholder="Email" class="w-full p-3 border rounded-lg">
-                <input id="login-password" type="password" placeholder="Password" class="w-full p-3 border rounded-lg">
-                <button id="login-submit-btn" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700">Log In</button>
-            </div>
-            <p class="text-sm text-center mt-4">
-                Don't have an account? <a href="#" id="show-signup-link" class="text-indigo-600 font-medium">Sign Up</a>
+    <div id="login-modal" class="modal fixed inset-0 flex items-center justify-center z-20">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-xs">
+            <h2 class="text-xl font-bold mb-4">Log In</h2>
+            <p id="login-error" class="text-red-500 text-sm mb-3 hidden"></p>
+            <input id="login-email" type="email" placeholder="Email" class="w-full p-2 border rounded-md mb-3">
+            <input id="login-password" type="password" placeholder="Password" class="w-full p-2 border rounded-md mb-4">
+            <button id="login-submit-btn" class="w-full bg-indigo-600 text-white font-bold py-2 rounded-md hover:bg-indigo-700">Log In</button>
+            <p class="text-xs text-center mt-3">
+                <a href="#" id="forgot-password-link" class="text-indigo-600 hover:underline">Forgot Password?</a>
+            </p>
+            <p class="text-xs text-center mt-2">
+                No account? <a href="#" id="show-signup-link" class="text-indigo-600 hover:underline">Sign Up</a>
             </p>
         </div>
     </div>
 
     <!-- Signup Modal -->
-    <div id="signup-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-        <div class="modal-content bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
-            <h2 class="text-2xl font-bold mb-4">Create Your Free Account</h2>
-            <p id="signup-error" class="text-red-500 text-sm mb-4 hidden"></p>
-            <div class="space-y-4">
-                <input id="signup-email" type="email" placeholder="Email" class="w-full p-3 border rounded-lg">
-                <input id="signup-password" type="password" placeholder="Password (min. 6 characters)" class="w-full p-3 border rounded-lg">
-                <button id="signup-submit-btn" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700">Create Account</button>
-            </div>
-            <p class="text-sm text-center mt-4">
-                Already have an account? <a href="#" id="show-login-link" class="text-indigo-600 font-medium">Log In</a>
+    <div id="signup-modal" class="modal fixed inset-0 flex items-center justify-center z-20">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-xs">
+            <h2 class="text-xl font-bold mb-4">Sign Up</h2>
+            <p id="signup-error" class="text-red-500 text-sm mb-3 hidden"></p>
+            <input id="signup-email" type="email" placeholder="Email" class="w-full p-2 border rounded-md mb-3">
+            <input id="signup-password" type="password" placeholder="Password (min 6 chars)" class="w-full p-2 border rounded-md mb-4">
+            <button id="signup-submit-btn" class="w-full bg-indigo-600 text-white font-bold py-2 rounded-md hover:bg-indigo-700">Create Account</button>
+            <p class="text-xs text-center mt-3">
+                Already have an account? <a href="#" id="show-login-link" class="text-indigo-600 hover:underline">Log In</a>
             </p>
         </div>
     </div>
 
-    <!-- Custom Alert Modal (for non-auth alerts) -->
-    <div id="alert-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-        <div class="modal-content bg-white p-6 rounded-xl shadow-2xl w-full max-w-sm text-center">
-            <h3 id="alert-title" class="text-xl font-semibold mb-3">Notice</h3>
-            <p id="alert-message" class="text-gray-600 mb-4">This is an alert!</p>
-            <button id="alert-close" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700">OK</button>
+    <!-- Password Reset Modal -->
+    <div id="reset-modal" class="modal fixed inset-0 flex items-center justify-center z-20">
+        <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-xs">
+            <h2 class="text-xl font-bold mb-4">Reset Password</h2>
+            <p id="reset-error" class="text-red-500 text-sm mb-3 hidden"></p>
+            <input id="reset-email" type="email" placeholder="Email" class="w-full p-2 border rounded-md mb-4">
+            <button id="reset-submit-btn" class="w-full bg-indigo-600 text-white font-bold py-2 rounded-md hover:bg-indigo-700">Send Reset Link</button>
+            <p class="text-xs text-center mt-3">
+                <a href="#" id="back-to-login-link" class="text-indigo-600 hover:underline">Back to Log In</a>
+            </p>
         </div>
     </div>
-    
-    <!-- Signature Modal (omitted for brevity, but you can re-integrate if needed) -->
 
-
-    <!-- Main Application Script -->
     <script type="module">
-        // Import Firebase functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { 
             getAuth, 
             createUserWithEmailAndPassword, 
             signInWithEmailAndPassword, 
             onAuthStateChanged, 
-            signOut 
+            signOut,
+            sendPasswordResetEmail
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { 
             getFirestore, 
             doc, 
-            setDoc, 
-            getDoc 
+            setDoc 
         } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // --- 1. FIREBASE CONFIG (YOUR UNIQUE KEYS ARE HERE) ---
+        // --- YOUR UNIQUE FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyAt-eXoGMmloqEUPp4rjtkvytiPsHUDkQQ",
             authDomain: "workflow-ai-139be.firebaseapp.com",
@@ -244,143 +113,70 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // --- 2. GLOBAL STATE ---
-        let currentUser = null;
-        let isProUser = false;
-        
-        // --- 3. DOM ELEMENTS ---
-        const navLoggedIn = document.getElementById('nav-logged-in');
-        const navLoggedOut = document.getElementById('nav-logged-out');
-        const userEmailDisplay = document.getElementById('user-email-display');
-        const homepageSection = document.getElementById('homepage-section');
-        const appSection = document.getElementById('app-section');
-        const settingsSection = document.getElementById('settings-section');
-        
-        // Modals
+        // --- DOM Elements ---
         const loginModal = document.getElementById('login-modal');
         const signupModal = document.getElementById('signup-modal');
-        const alertModal = document.getElementById('alert-modal'); // <-- Added this to fix bug 
-        
-        // Nav Buttons
-        const loginNavBtn = document.getElementById('login-nav-btn');
-        const signupNavBtn = document.getElementById('signup-nav-btn');
-        const signupHeroBtn = document.getElementById('signup-hero-btn');
-        const settingsBtn = document.getElementById('settings-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const logoutBtnSettings = document.getElementById('logout-btn-settings');
-        
-        // Modal Links
-        const showSignupLink = document.getElementById('show-signup-link');
-        const showLoginLink = document.getElementById('show-login-link');
-        
-        // --- 4. AUTH STATE LISTENER ---
-        // This is the core of the app. It runs whenever the user's login state changes.
+        const resetModal = document.getElementById('reset-modal');
+        const navLoggedIn = document.getElementById('nav-logged-in');
+        const navLoggedOut = document.getElementById('nav-logged-out');
+        const authStatus = document.getElementById('auth-status');
+        const statusTitle = document.getElementById('status-title');
+        const statusMessage = document.getElementById('status-message');
+
+        // --- AUTH STATE LISTENER ---
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // User is signed in
-                currentUser = user;
-                
-                // Check their "Pro" status from our database
-                isProUser = await checkProStatus(user.uid);
-                
-                // Update the UI
-                updateUIForLoggedInUser();
-                
-                // Update settings page
-                document.getElementById('settings-user-email').textContent = user.email;
-                document.getElementById('subscription-status').textContent = isProUser ? "Pro Plan" : "Free Plan";
-                if (isProUser) {
-                    document.getElementById('upgrade-section').style.display = 'none';
-                    document.getElementById('pro-watermark-notice').style.display = 'none';
-                }
+                // Logged In
+                authStatus.textContent = "LOGGED IN";
+                navLoggedOut.style.display = 'none';
+                navLoggedIn.style.display = 'flex';
+                document.getElementById('user-email-display').textContent = user.email;
+                statusTitle.textContent = "Welcome, " + user.email.split('@')[0] + "!";
+                statusMessage.textContent = "Your authentication is working perfectly.";
+
+                // Close all modals immediately upon successful login
+                loginModal.style.display = 'none';
+                signupModal.style.display = 'none';
+                resetModal.style.display = 'none';
 
             } else {
-                // User is signed out
-                currentUser = null;
-                isProUser = false;
-                updateUIForLoggedOutUser();
+                // Logged Out
+                authStatus.textContent = "LOGGED OUT";
+                navLoggedIn.style.display = 'none';
+                navLoggedOut.style.display = 'flex';
+                statusTitle.textContent = "Awaiting User Action";
+                statusMessage.textContent = "Please Log In or Sign Up to test the connection.";
             }
         });
 
-        async function checkProStatus(userId) {
-            const docRef = doc(db, "users", userId);
-            const docSnap = await getDoc(docRef);
-            if (docSnap.exists() && docSnap.data().is_pro === true) {
-                return true;
-            }
-            return false;
-        }
+        // --- UTILITY: OPEN/CLOSE MODALS ---
+        document.getElementById('login-nav-btn').onclick = () => loginModal.style.display = 'flex';
+        document.getElementById('signup-nav-btn').onclick = () => signupModal.style.display = 'flex';
 
-        // --- 5. UI UPDATE FUNCTIONS ---
-        function updateUIForLoggedInUser() {
-            navLoggedOut.style.display = 'none';
-            navLoggedIn.style.display = 'flex';
-            userEmailDisplay.textContent = currentUser.email;
-            
-            // Hide homepage, show the app
-            homepageSection.style.display = 'none';
-            appSection.style.display = 'block';
-            settingsSection.style.display = 'none';
-            
-            // Close any open auth modals
-            loginModal.style.display = 'none';
-            signupModal.style.display = 'none';
-        }
-
-        function updateUIForLoggedOutUser() {
-            navLoggedOut.style.display = 'flex';
-            navLoggedIn.style.display = 'none';
-            
-            // Show homepage, hide the app
-            homepageSection.style.display = 'block';
-            appSection.style.display = 'none';
-            settingsSection.style.display = 'none';
-        }
-
-        // --- 6. AUTH MODAL CONTROLS ---
-        loginNavBtn.onclick = () => loginModal.style.display = 'flex';
-        signupNavBtn.onclick = () => signupModal.style.display = 'flex';
-        signupHeroBtn.onclick = () => signupModal.style.display = 'flex';
-        
-        showSignupLink.onclick = (e) => {
-            e.preventDefault();
-            loginModal.style.display = 'none';
-            signupModal.style.display = 'flex';
-        };
-        showLoginLink.onclick = (e) => {
-            e.preventDefault();
-            signupModal.style.display = 'none';
-            loginModal.style.display = 'flex';
-        };
-        
-        // Close modals if clicking background
         window.onclick = (e) => {
             if (e.target === loginModal) loginModal.style.display = 'none';
             if (e.target === signupModal) signupModal.style.display = 'none';
-            if (e.target === alertModal) alertModal.style.display = 'none';
+            if (e.target === resetModal) resetModal.style.display = 'none';
         };
 
-        // --- 7. AUTH ACTIONS (SIGNUP, LOGIN, LOGOUT) ---
+        // Internal Modal Links
+        document.getElementById('show-signup-link').onclick = (e) => { e.preventDefault(); loginModal.style.display = 'none'; signupModal.style.display = 'flex'; };
+        document.getElementById('show-login-link').onclick = (e) => { e.preventDefault(); signupModal.style.display = 'none'; loginModal.style.display = 'flex'; };
+        document.getElementById('forgot-password-link').onclick = (e) => { e.preventDefault(); loginModal.style.display = 'none'; resetModal.style.display = 'flex'; };
+        document.getElementById('back-to-login-link').onclick = (e) => { e.preventDefault(); resetModal.style.display = 'none'; loginModal.style.display = 'flex'; };
+
+        // --- AUTH ACTIONS ---
         
         // Sign Up
         document.getElementById('signup-submit-btn').onclick = async () => {
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             const errorEl = document.getElementById('signup-error');
-
+            errorEl.style.display = 'none';
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                
-                // Create a record for this user in our Firestore database
-                // This is where we store their "Pro" status
-                await setDoc(doc(db, "users", userCredential.user.uid), {
-                    email: userCredential.user.email,
-                    is_pro: false, // Default to free
-                    joined: new Date()
-                });
-                
-                // onAuthStateChanged will handle the rest
-                
+                // Create minimal user doc (we only care that it logs them in)
+                await setDoc(doc(db, "users", userCredential.user.uid), { email: userCredential.user.email, is_pro: false });
             } catch (error) {
                 errorEl.textContent = error.message;
                 errorEl.style.display = 'block';
@@ -392,10 +188,25 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             const errorEl = document.getElementById('login-error');
-            
+            errorEl.style.display = 'none';
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // onAuthStateChanged will handle the rest
+            } catch (error) {
+                errorEl.textContent = error.message;
+                errorEl.style.display = 'block';
+            }
+        };
+
+        // Forgot Password
+        document.getElementById('reset-submit-btn').onclick = async () => {
+            const email = document.getElementById('reset-email').value;
+            const errorEl = document.getElementById('reset-error');
+            errorEl.style.display = 'none';
+            if (!email) { errorEl.textContent = "Please enter your email."; errorEl.style.display = 'block'; return; }
+            try {
+                await sendPasswordResetEmail(auth, email);
+                resetModal.style.display = 'none';
+                alert(`Password reset link sent to ${email}. Check your inbox (including spam)!`);
             } catch (error) {
                 errorEl.textContent = error.message;
                 errorEl.style.display = 'block';
@@ -403,210 +214,8 @@
         };
 
         // Log Out
-        const handleLogout = () => {
-            signOut(auth);
-            // onAuthStateChanged will handle the rest
-        };
-        logoutBtn.onclick = handleLogout;
-        logoutBtnSettings.onclick = handleLogout;
-
-        // --- 8. PAGE NAVIGATION (Settings, App) ---
-        settingsBtn.onclick = () => {
-            appSection.style.display = 'none';
-            settingsSection.style.display = 'block';
-        };
+        document.getElementById('logout-btn').onclick = () => { signOut(auth); };
         
-        // Simple way to get back to app (click logo)
-        document.querySelector('.text-3xl').onclick = () => {
-            if (currentUser) {
-                settingsSection.style.display = 'none';
-                appSection.style.display = 'block';
-            }
-        };
-
-        // --- 9. "PHASE 1" PRO UPGRADE (Access Code) ---
-        document.getElementById('submit-access-code-btn').onclick = async () => {
-            const code = document.getElementById('access-code-input').value;
-            // The secret code from your Gumroad thank you note
-            const secretCode = "WORKFLOW_AI_PRO_2025"; 
-            
-            if (code === secretCode) {
-                // Update the user's status in the database
-                const docRef = doc(db, "users", currentUser.uid);
-                await setDoc(docRef, { is_pro: true }, { merge: true });
-                
-                // Update UI immediately
-                isProUser = true;
-                document.getElementById('subscription-status').textContent = "Pro Plan";
-                document.getElementById('upgrade-section').style.display = 'none';
-                document.getElementById('pro-watermark-notice').style.display = 'none';
-                customAlert('Success!', 'You have been upgraded to Pro!');
-            } else {
-                customAlert('Error', 'That access code is not valid.');
-            }
-        };
-        
-        // --- 10. GUMROAD LINKS ---
-        // Your unique product link
-        const gumroadProLink = "https://contentcraft18.gumroad.com/l/workflowaipro"; 
-        document.getElementById('upgrade-link-pdf').onclick = (e) => {
-            e.preventDefault();
-            window.open(gumroadProLink, '_blank');
-        };
-        
-        // Link to Gumroad's generic customer portal for subscription management
-        const gumroadManageLink = "https://gumroad.com/account";
-        document.getElementById('manage-subscription-btn').onclick = (e) => {
-            e.preventDefault();
-            window.open(gumroadManageLink, '_blank');
-        };
-
-        // --- 11. PDF.JS and PDF-LIB LOGIC (Core App Functionality) ---
-        
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://unpkg.com/browse/pdfjs-dist@2.7.570/build/pdf.worker.js';
-        const { PDFDocument, rgb, StandardFonts, degrees } = PDFLib;
-
-        // PDF variables and DOM elements
-        let pdfDoc = null;
-        let pdfBytes = null;
-        let pdfScale = 1.5;
-        let currentPage = 1;
-        let pdfTotalPages = 0;
-        let activeTool = null;
-        let signatureImage = null;
-        let edits = [];
-
-        const fileUpload = document.getElementById('file-upload');
-        const fileName = document.getElementById('file-name');
-        const canvas = document.getElementById('pdf-canvas');
-        const ctx = canvas.getContext('2d');
-        const viewerPlaceholder = document.getElementById('viewer-placeholder');
-        
-        fileUpload.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file || file.type !== 'application/pdf') return;
-            fileName.textContent = file.name;
-            viewerPlaceholder.style.display = 'none';
-            canvas.style.display = 'block';
-            edits = []; // Clear edits for new file
-
-            const arrayBuffer = await file.arrayBuffer();
-            pdfBytes = new Uint8Array(arrayBuffer);
-            
-            pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-            pdfTotalPages = pdfDoc.numPages;
-            currentPage = 1;
-            renderPage(currentPage);
-        });
-
-        async function renderPage(pageNum) {
-            const page = await pdfDoc.getPage(pageNum);
-            const viewport = page.getViewport({ scale: pdfScale });
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            const renderContext = { canvasContext: ctx, viewport: viewport };
-            await page.render(renderContext).promise;
-        }
-
-        document.getElementById('download-pdf').addEventListener('click', async () => {
-            if (!pdfBytes) {
-                customAlert('No PDF Loaded', 'Please upload a PDF to edit.');
-                return;
-            }
-
-            const doc = await PDFDocument.load(pdfBytes);
-            
-            // --- WATERMARK (Pro Check) ---
-            if (!isProUser) {
-                // Only add watermark if they are NOT a Pro user
-                const font = await doc.embedFont(StandardFonts.Helvetica);
-                const pages = doc.getPages();
-                if (pages.length > 0) {
-                    const watermarkText = 'Secured by WorkFlow AI (Free Plan)';
-                    const { width, height } = pages[0].getSize();
-                    pages[0].drawText(watermarkText, {
-                        x: width / 2 - 120,
-                        y: 20,
-                        size: 14,
-                        font: font,
-                        color: rgb(0.5, 0.5, 0.5), // Gray color
-                        opacity: 0.3,
-                    });
-                }
-            }
-            
-            // Save the modified PDF
-            const modifiedPdfBytes = await doc.save();
-
-            // Create a download link
-            const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `edited_${fileName.textContent || 'document'}.pdf`;
-            link.click();
-
-            customAlert('Download Started!', 'Your edited PDF is downloading.');
-        });
-
-        // --- 12. CUSTOM ALERT (for non-auth alerts) ---
-        const alertTitle = document.getElementById('alert-title');
-        const alertMessage = document.getElementById('alert-message');
-        const alertClose = document.getElementById('alert-close');
-        
-        // REMOVED THE LINE THAT WAS CAUSING THE INFINITE LOOP HERE
-
-        function customAlert(title, message) {
-            alertTitle.textContent = title;
-            alertMessage.textContent = message;
-            alertModal.style.display = 'flex';
-        }
-        alertClose.onclick = () => alertModal.style.display = 'none';
-
-        // --- 13. CAROUSEL LOGIC ---
-        const carousel = document.getElementById('carousel');
-        const dotsContainer = document.getElementById('carousel-dots');
-        const items = document.querySelectorAll('.carousel-item');
-        let currentIndex = 0;
-
-        // Create dots
-        items.forEach((_, index) => {
-            const dot = document.createElement('button');
-            dot.classList.add('w-3', 'h-3', 'bg-gray-300', 'rounded-full', 'hover:bg-gray-500');
-            dot.onclick = () => {
-                goToSlide(index);
-                stopCarouselInterval();
-            };
-            dotsContainer.appendChild(dot);
-        });
-        const dots = dotsContainer.querySelectorAll('button');
-        
-        function updateDots() {
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('bg-indigo-600', index === currentIndex);
-                dot.classList.toggle('bg-gray-300', index !== currentIndex);
-            });
-        }
-        
-        function goToSlide(index) {
-            currentIndex = index % items.length;
-            carousel.scrollTo({
-                left: carousel.clientWidth * currentIndex,
-                behavior: 'smooth'
-            });
-            updateDots();
-        }
-
-        // Auto-scroll
-        let carouselInterval = setInterval(() => {
-            goToSlide(currentIndex + 1);
-        }, 5000); // 5 seconds
-        
-        function stopCarouselInterval() {
-            clearInterval(carouselInterval);
-        }
-
-        updateDots(); // Init dots
-
     </script>
 </body>
 </html>
